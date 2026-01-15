@@ -145,7 +145,8 @@ int main(int argc, char* argv[])
         GLCall(glEnable(GL_BLEND));
         GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
-        Cube &c = CubeController::getInstance().getCube();
+        // RubiksCube &c = CubeController::getInstance().getCube();
+        Cube c = Cube(0.0f, 0.0f, 0.0f);
         const float *vertices = c.getVertices();
         const unsigned int *indices = c.getIndices();
 
@@ -201,8 +202,8 @@ int main(int argc, char* argv[])
             glm::mat4 scl = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
 
             /* Initialize the MVP matrices */ 
-            glm::mat4 model = trans * rot * scl;
-            // glm::mat4 model = CubeController::getInstance().getModelMatrix();
+            // glm::mat4 model = trans * rot * scl;
+            glm::mat4 model = CubeController::getInstance().getModelMatrix();
             glm::mat4 view = camera.GetViewMatrix();
             glm::mat4 proj = camera.GetProjectionMatrix();
             glm::mat4 mvp = proj * view * model;

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Cube.h"
+#include "RubiksCube.h"
 #include <memory>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -8,14 +8,14 @@
 
 class CubeController {
     private:
-        Cube cube;
+        RubiksCube cube;
         bool isClockWise;
         float rotationAngle;
         glm::mat4 trans;
         glm::mat4 rot;
         glm::mat4 scl;
         CubeController(): 
-            cube(Cube()), isClockWise(true), rotationAngle(90.0f),
+            cube(RubiksCube()), isClockWise(true), rotationAngle(90.0f),
             trans(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.0f))),
             rot(glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(1.0f))),
             scl(glm::scale(glm::mat4(1.0f), glm::vec3(1.0f))) { rot = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(1.0f)); }
@@ -45,5 +45,5 @@ class CubeController {
             rot = glm::rotate(rot, glm::radians(cw * rotationAngle), axis);
         }
 
-        Cube& getCube() { return cube; }
+        RubiksCube& getCube() { return cube; }
 };

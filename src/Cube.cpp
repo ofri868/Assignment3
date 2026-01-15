@@ -1,43 +1,43 @@
 #include "Cube.h"
 
-Cube::Cube():
+Cube::Cube(float x, float y, float z) :
     vertices{
         // positions           // colors           // texCoords
         // Front Face          // red
-        -0.5f, -0.5f, 0.5f,    1.0f, 0.0f, 0.0f,   0.0f, 0.0f, // Front-bottom-left
-         0.5f, -0.5f, 0.5f,    1.0f, 0.0f, 0.0f,   1.0f, 0.0f, // Front-bottom-right
-         0.5f,  0.5f, 0.5f,    1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // Front-top-right
-        -0.5f,  0.5f, 0.5f,    1.0f, 0.0f, 0.0f,   0.0f, 1.0f, // Front-top-left
+        x-0.5f, y-0.5f, z+0.5f,    1.0f, 0.0f, 0.0f,   0.0f, 0.0f, // Front-bottom-left
+        x+0.5f, y-0.5f, z+0.5f,    1.0f, 0.0f, 0.0f,   1.0f, 0.0f, // Front-bottom-right
+        x+0.5f, y+0.5f, z+0.5f,    1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // Front-top-right
+        x-0.5f, y+0.5f, z+0.5f,    1.0f, 0.0f, 0.0f,   0.0f, 1.0f, // Front-top-left
 
         // Back Face           // orange
-        -0.5f, -0.5f, -0.5f,   1.0f, 0.5f, 0.0f,   0.0f, 0.0f, // Back-bottom-left
-         0.5f, -0.5f, -0.5f,   1.0f, 0.5f, 0.0f,   1.0f, 0.0f, // Back-bottom-right
-         0.5f,  0.5f, -0.5f,   1.0f, 0.5f, 0.0f,   1.0f, 1.0f, // Back-top-right
-        -0.5f,  0.5f, -0.5f,   1.0f, 0.5f, 0.0f,   0.0f, 1.0f,  // Back-top-left
+        x-0.5f, y-0.5f, z-0.5f,   1.0f, 0.5f, 0.0f,   0.0f, 0.0f, // Back-bottom-left
+        x+0.5f, y-0.5f, z-0.5f,   1.0f, 0.5f, 0.0f,   1.0f, 0.0f, // Back-bottom-right
+        x+0.5f, y+0.5f, z-0.5f,   1.0f, 0.5f, 0.0f,   1.0f, 1.0f, // Back-top-right
+        x-0.5f, y+0.5f, z-0.5f,   1.0f, 0.5f, 0.0f,   0.0f, 1.0f,  // Back-top-left
 
         // Left Face           // blue
-        -0.5f, -0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // Back-bottom-left
-        -0.5f, -0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 0.0f, // Front-bottom-left
-        -0.5f,  0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f, // Front-top-left
-        -0.5f,  0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f, // Back-top-left
+        x-0.5f, y-0.5f, z-0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // Back-bottom-left
+        x-0.5f, y-0.5f, z+0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 0.0f, // Front-bottom-left
+        x-0.5f, y+0.5f, z+0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f, // Front-top-left
+        x-0.5f, y+0.5f, z-0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f, // Back-top-left
 
         // Right Face          // green
-         0.5f, -0.5f,  0.5f,    0.0f, 1.0f, 0.0f,   0.0f, 0.0f, // Back-bottom-right
-         0.5f, -0.5f, -0.5f,    0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Front-bottom-right
-         0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 0.0f,   1.0f, 1.0f, // Front-top-right
-         0.5f,  0.5f,  0.5f,    0.0f, 1.0f, 0.0f,   0.0f, 1.0f, // Back-top-right
+        x+0.5f, y-0.5f, z+0.5f,    0.0f, 1.0f, 0.0f,   0.0f, 0.0f, // Back-bottom-right
+        x+0.5f, y-0.5f, z-0.5f,    0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Front-bottom-right
+        x+0.5f, y+0.5f, z-0.5f,    0.0f, 1.0f, 0.0f,   1.0f, 1.0f, // Front-top-right
+        x+0.5f, y+0.5f, z+0.5f,    0.0f, 1.0f, 0.0f,   0.0f, 1.0f, // Back-top-right
 
         // Top Face            // white
-        -0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 0.0f, // Back-top-left
-         0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 0.0f, // Back-top-right
-         0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 1.0f, // Front-top-right
-        -0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 1.0f, // Front-top-left
+        x-0.5f, y+0.5f, z+0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 0.0f, // Back-top-left
+        x+0.5f, y+0.5f, z+0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 0.0f, // Back-top-right
+        x+0.5f, y+0.5f, z-0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 1.0f, // Front-top-right
+        x-0.5f, y+0.5f, z-0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 1.0f, // Front-top-left
 
         // Bottom Face         // yellow
-        -0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 0.0f, // Back-bottom-left
-         0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Back-bottom-right
-         0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 0.0f,   1.0f, 1.0f, // Front-bottom-right
-        -0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f, // Front-bottom-left
+        x-0.5f, y-0.5f, z-0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 0.0f, // Back-bottom-left
+        x+0.5f, y-0.5f, z-0.5f,   1.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Back-bottom-right
+        x+0.5f, y-0.5f, z+0.5f,   1.0f, 1.0f, 0.0f,   1.0f, 1.0f, // Front-bottom-right
+        x-0.5f, y-0.5f, z+0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f, // Front-bottom-left
 
     },
 
@@ -67,4 +67,6 @@ Cube::Cube():
         22, 23, 20
     }
 
+{}
+Cube::Cube(): Cube(0.0f, 0.0f, 0.0f)
 {}

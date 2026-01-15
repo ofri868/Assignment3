@@ -9,6 +9,7 @@ class Cube {
 
     public:
         Cube();
+        Cube(float x, float y, float z);
         const float *getVertices() const { return vertices; }
         const unsigned int *getIndices() const { return indices; }
         const size_t getVerticesSize() const { return sizeof(vertices); }
