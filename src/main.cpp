@@ -1,181 +1,229 @@
-#include <iostream>
-#include <chrono>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
-#include <vector>
-#include <stb/stb_image.h>
-#include <stb/stb_image_write.h>
-#include <filesystem>
-#include <fstream>
+#include <glm/gtc/matrix_transform.hpp>
 
-#include "Camera1.h"
-#include "Ray.h"
-#include "GeoPrims.h"
-#include "LightSource.h"
-#include "DirectionalLight.h"
-#include "Spotlight.h"
-#include "Scene.h"
-#include "Hit.h"
+#include <Debugger.h>
+#include <VertexBuffer.h>
+#include <VertexBufferLayout.h>
+#include <IndexBuffer.h>
+#include <VertexArray.h>
+#include <Shader.h>
+#include <Texture.h>
+#include <Camera.h>
 
-const int MAX_LEVELS = 5;
-const glm::vec3 BACKROUND_COLOR(0.f);
-const glm::vec3 MATERIAL_EMISSION(0.f);
-const glm::vec3 MATERIAL_SPECULAR(0.7f, 0.7f, 0.7f);
+#include <iostream>
 
-const std::string DEBUG_SCENE_PATH = "res/debug_scene.txt";
-std::ofstream DEBUG_OUTPUT_FILE(DEBUG_SCENE_PATH);
+#include "CubeController.h"
 
-glm::vec3 rayTrace(const std::shared_ptr<Hit> &hit, 
-                   const Ray &ray, int level,
-                   const std::vector<std::shared_ptr<GeoPrim>> &objects,
-                   const std::vector<std::shared_ptr<LightSource>> &lights,
-                   const glm::vec3 &ambientIntensity) {
-    if (level == MAX_LEVELS) {
-        return glm::vec3(0.f); // Base case for recursion
-    }
-    
-    // Compute local illumination by Phong model
-    const std::shared_ptr<GeoPrim> hitObject = hit->getObject(); // Cache object pointer
-    const glm::vec3 hitPoint = hit->getPoint();
-    const glm::vec3 objectColor = hitObject->getColorByPoint(hitPoint);
-    glm::vec3 color = MATERIAL_EMISSION + ambientIntensity * objectColor; //Ie + Ka * Ia
-    // Per-light Phong shading (compute L per light; avoid relying on light->intensityAt for consistency)
-    const glm::vec3 N = hit->getNormal();
-    const glm::vec3 viewDir = glm::normalize(ray.getOrigin() - hitPoint);
-    for (const std::shared_ptr<LightSource>& light : lights) {
-        if (!light->isIlluminated(objects, hit)) continue;
+/* Window size */
+const unsigned int width = 800;
+const unsigned int height = 800;
+// const float FOVdegree = 45.0f;  // Field Of View Angle
+const float near = 0.1f;
+const float far = 100.0f;
 
-        glm::vec3 L; // direction from point to light
-        glm::vec3 lightIntensity = light->getIntensity();
-        float spotFactor = 1.0f;
+// /* Shape vertices coordinates with positions, colors, and corrected texCoords */
+// float vertices[] = {
+//     // positions            // colors            // texCoords
+//     -0.5f, -0.5f,  0.5f,    1.0f, 0.0f, 0.0f,    0.0f, 0.0f,  // Bottom-left
+//      0.5f, -0.5f,  0.5f,    0.0f, 1.0f, 0.0f,    1.0f, 0.0f,  // Bottom-right
+//      0.5f,  0.5f,  0.5f,    0.0f, 0.0f, 1.0f,    1.0f, 1.0f,  // Top-right
+//     -0.5f,  0.5f,  0.5f,    1.0f, 1.0f, 0.0f,    0.0f, 1.0f,  // Top-left
+// };
 
-        if (DirectionalLight* dl = dynamic_cast<DirectionalLight*>(light.get())) {
-            L = -dl->getDirection();
-        } else if (Spotlight* sl = dynamic_cast<Spotlight*>(light.get())) {
-            // vector from light to point
-            glm::vec3 lightToPoint = hitPoint - sl->getPosition();
-            float len = glm::length(lightToPoint);
-            if (len <= 0.0f) continue;
-            glm::vec3 lightToPointN = lightToPoint * (1.0f / len);
-            // spot factor: dot between spotlight beam direction and vector from light to point
-            spotFactor = glm::max(0.0f, glm::dot(sl->getDirection(), lightToPointN));
-            // L is direction from point to light
-            L = -lightToPointN;
-        } else {
-            continue; // unknown light type
-        }
+// /* Indices for vertices order */
+// unsigned int indices[] = {
+//     0, 1, 2, 
+//     2, 3, 0
+// };
 
-        float lambert = glm::max(0.0f, glm::dot(N, L));
-        glm::vec3 diffuse = objectColor * lightIntensity * lambert * spotFactor;
-        glm::vec3 R = 2.0f * glm::dot(N, L) * N - L;
-        float RdotV = glm::max(0.0f, glm::dot(R, viewDir));
-        float specFactor = std::pow(RdotV, static_cast<float>(hitObject->getN()));
-        glm::vec3 specular = MATERIAL_SPECULAR * lightIntensity * specFactor * spotFactor;
+// float vertices[] = {
+//         // positions           // colors           // texCoords
+//         // Front Face          // red
+//         -0.5f, -0.5f, 0.5f,    1.0f, 0.0f, 0.0f,   0.0f, 0.0f, // Front-bottom-left
+//          0.5f, -0.5f, 0.5f,    1.0f, 0.0f, 0.0f,   1.0f, 0.0f, // Front-bottom-right
+//          0.5f,  0.5f, 0.5f,    1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // Front-top-right
+//         -0.5f,  0.5f, 0.5f,    1.0f, 0.0f, 0.0f,   0.0f, 1.0f, // Front-top-left
 
-        color += diffuse + specular;
-    }
+//         // Back Face           // orange
+//         -0.5f, -0.5f, -0.5f,   1.0f, 0.5f, 0.0f,   0.0f, 0.0f, // Back-bottom-left
+//          0.5f, -0.5f, -0.5f,   1.0f, 0.5f, 0.0f,   1.0f, 0.0f, // Back-bottom-right
+//          0.5f,  0.5f, -0.5f,   1.0f, 0.5f, 0.0f,   1.0f, 1.0f, // Back-top-right
+//         -0.5f,  0.5f, -0.5f,   1.0f, 0.5f, 0.0f,   0.0f, 1.0f,  // Back-top-left
 
-    // Reflection logic
-    if(hitObject->isReflective()) {
-        color = glm::vec3(0.f); // Reset color to accumulate reflection only
-        Ray outRay(hitPoint, hit->getReflectionDir());
-        std::shared_ptr<Hit> reflectionHit = outRay.findClosestIntersection(objects);
-        if (reflectionHit != nullptr) {
-            // Pass Hit result directly to avoid recalculation
-            color += hitObject->getReflectionIntensity() * rayTrace(reflectionHit, outRay, level + 1, objects, lights, ambientIntensity);
-        }
-    }
-    
-    // Refrafction logic
-    if(hitObject->isTransparent()) {
-        color = glm::vec3(0.f); // Reset color to accumulate refraction only
-        Sphere* spherePtr = dynamic_cast<Sphere*>(hitObject.get());
-        Ray exitRay = spherePtr->getRefractionExitRay(hit, ray);
-        // glm::vec3 L = ray.getDirection();
-        // glm::vec3 N = hit->getNormal();
-        // float cosL = glm::dot(-L, N);
-        // float eta = 1.0f / 1.5f; // index of refraction ratio
-        // glm::vec3 Rr = (eta * cosL - eta * glm::sqrt(1 - cosL * cosL)) * N - eta * L;
-        // Ray refractedRay(hitPoint - N * 0.001f, Rr);
-        // std::shared_ptr<Hit> refractionHit = refractedRay.findClosestIntersection(objects);
-        // if(refractionHit == nullptr) {
-        //     return color; // No further refraction
-        // }
-        // glm::vec3 exitN = refractionHit->getNormal();
-        // float exitEta = 1.5f / 1.0f;
-        // float cosRr = glm::dot(refractedRay.getDirection(), exitN);
-        // glm::vec3 exitDirection = (exitEta * cosRr - exitEta * glm::sqrt(1 - cosRr * cosRr)) * exitN - exitEta * refractedRay.getDirection();
-        // Ray exitRay(refractionHit->getPoint() + exitN * 0.001f, exitDirection);
-        std::shared_ptr<Hit> exitHit = exitRay.findClosestIntersection(objects);
-        if (exitHit != nullptr) {
-            // Pass Hit result directly to avoid recalculation
-            color += hitObject->getReflectionIntensity() * rayTrace(exitHit, exitRay, level + 1, objects, lights, ambientIntensity);
-        }
-    }
+//         // Left Face           // blue
+//         -0.5f, -0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // Back-bottom-left
+//         -0.5f, -0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 0.0f, // Front-bottom-left
+//         -0.5f,  0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f, // Front-top-left
+//         -0.5f,  0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f, // Back-top-left
 
-    return color;
-}
+//         // Right Face          // green
+//          0.5f, -0.5f,  0.5f,    0.0f, 1.0f, 0.0f,   0.0f, 0.0f, // Back-bottom-right
+//          0.5f, -0.5f, -0.5f,    0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Front-bottom-right
+//          0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 0.0f,   1.0f, 1.0f, // Front-top-right
+//          0.5f,  0.5f,  0.5f,    0.0f, 1.0f, 0.0f,   0.0f, 1.0f, // Back-top-right
 
-int rayTraceScene(std::string sceneFilePath)
+//         // Top Face            // white
+//         -0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 0.0f, // Back-top-left
+//          0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 0.0f, // Back-top-right
+//          0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 1.0f, // Front-top-right
+//         -0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 1.0f, // Front-top-left
+
+//         // Bottom Face         // yellow
+//         -0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 0.0f, // Back-bottom-left
+//          0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Back-bottom-right
+//          0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 0.0f,   1.0f, 1.0f, // Front-bottom-right
+//         -0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f, // Front-bottom-left
+
+//     };
+
+// unsigned int indices[] = {
+//     // Front face
+//     0, 1, 2,
+//     2, 3, 0,
+
+//     // Back face
+//     4, 5, 6,
+//     6, 7, 4,
+
+//     // Left face
+//     8, 9, 10,
+//     10, 11, 8,
+
+//     // Right face
+//     12, 13, 14,
+//     14, 15, 12,
+
+//     // Top face
+//     16, 17, 18,
+//     18, 19, 16,
+
+//     // Bottom face
+//     20, 21, 22,
+//     22, 23, 20
+// };
+
+int main(int argc, char* argv[])
 {
-    std::shared_ptr<Scene> scene = Scene::parseToScene(sceneFilePath);
-    if(scene == nullptr) {
-        std::cout << "Error parsing scene." << std::endl;
+    GLFWwindow* window;
+
+    /* Initialize the library */
+    if (!glfwInit())
+    {
+        return -1;
+    }
+    
+    /* Set OpenGL to Version 3.3.0 */
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    /* Create a windowed mode window and its OpenGL context */
+    window = glfwCreateWindow(width, height, "OpenGL", NULL, NULL);
+    if (!window)
+    {
+        glfwTerminate();
         return -1;
     }
 
-    DEBUG_OUTPUT_FILE << "Scene parsed successfully from: " << sceneFilePath << "the scene: " << scene->toString() << "\n";
-    std:: cout << "Scene parsed successfully from: " << sceneFilePath << std::endl;
-    // Cache frequently accessed scene data
-    const std::vector<std::shared_ptr<GeoPrim>>& objects = scene->getObjects();
-    const std::vector<std::shared_ptr<LightSource>>& lights = scene->getLights();
-    const glm::vec3 ambientIntensity = scene->getAmbientLight().getIntensity();
-    const Camera& camera = scene->getCamera();
-    
-    // Ray tracer
-    const int PIXEL_WIDTH = 1000;
-    const int PIXEL_HEIGHT = 1000;
-    unsigned char* image = new unsigned char[PIXEL_WIDTH * PIXEL_HEIGHT * 3]{0}; // 1000x1000 rgb image initialized to background color
-    
-    for (int y = 0; y < PIXEL_HEIGHT; y++) {
-        for (int x = 0; x < PIXEL_WIDTH; x++) {
-            std::vector<Ray> rays = camera.castRaysThroughPixel(x, y);
-            glm::vec3 color = BACKROUND_COLOR;
-            int rayCount = rays.size();
-            
-            for (const Ray &ray : rays) {
-                std::shared_ptr<Hit> hit = ray.findClosestIntersection(objects);
-                if (hit != nullptr) {
-                    // Pass Hit result directly to avoid recalculation
-                    color += rayTrace(hit, ray, 0, objects, lights, ambientIntensity);
-                }
-            }
-            // Use multiplication instead of division (faster)
-            if (rayCount > 1) {
-                color *= (1.0f / static_cast<float>(rayCount));
-            }
-            int idx = (y * PIXEL_WIDTH + x) * 3;
-            image[idx] = static_cast<unsigned char>(glm::clamp(color.r * 255.0f, 0.0f, 255.0f));
-            image[idx + 1] = static_cast<unsigned char>(glm::clamp(color.g * 255.0f, 0.0f, 255.0f));
-            image[idx + 2] = static_cast<unsigned char>(glm::clamp(color.b * 255.0f, 0.0f, 255.0f));
-            // std::cout << "Written Pixel (" << x << ", " << y << ") with color (" << glm::clamp(color.r * 255.0f, 0.0f, 255.0f) << ", " << glm::clamp(color.g * 255.0f, 0.0f, 255.0f) << ", " << glm::clamp(color.b * 255.0f, 0.0f, 255.0f) << ") to image buffer.\n";
+    /* Make the window's context current */
+    glfwMakeContextCurrent(window);
+
+    /* Load GLAD so it configures OpenGL */
+    gladLoadGL();
+
+    /* Control frame rate */
+    glfwSwapInterval(1);
+
+    /* Print OpenGL version after completing initialization */
+    std::cout << "OpenGL Version: " << glGetString(GL_VERSION) << std::endl;
+
+    /* Set scope so that on widow close the destructors will be called automatically */
+    {
+        /* Blend to fix images with transperancy */
+        GLCall(glEnable(GL_BLEND));
+        GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
+        Cube &c = CubeController::getInstance().getCube();
+        const float *vertices = c.getVertices();
+        const unsigned int *indices = c.getIndices();
+
+        /* Generate VAO, VBO, EBO and bind them */
+        VertexArray va;
+        VertexBuffer vb(vertices, c.getVerticesSize());
+        IndexBuffer ib(indices, c.getIndicesSize());
+
+        VertexBufferLayout layout;
+        layout.Push<float>(3);  // positions
+        layout.Push<float>(3);  // colors
+        layout.Push<float>(2);  // texCoords
+        va.AddBuffer(vb, layout);
+
+        /* Create texture */
+        Texture texture("res/textures/plane.png");
+        texture.Bind();
+         
+        /* Create shaders */
+        Shader shader("res/shaders/basic.shader");
+        shader.Bind();
+
+        /* Unbind all to prevent accidentally modifying them */
+        va.Unbind();
+        vb.Unbind();
+        ib.Unbind();
+        shader.Unbind();
+
+        /* Enables the Depth Buffer */
+    	GLCall(glEnable(GL_DEPTH_TEST));
+
+        /* Create camera */
+        Camera camera(width, height);
+        camera.SetOrthographic(near, far);
+        camera.EnableInputs(window);
+        glm::mat4 rot = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(1.0f));
+
+        /* Loop until the user closes the window */
+        while (!glfwWindowShouldClose(window))
+        {
+            /* Set white background color */
+            GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
+
+            /* Render here */
+            GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
+
+            /* Initialize uniform color */
+            glm::vec4 color = glm::vec4(1.0, 1.0f, 1.0f, 1.0f);
+
+            /* Initialize the model Translate, Rotate and Scale matrices */
+            glm::mat4 trans = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.0f));
+            rot = glm::rotate(rot, 0.007f, glm::vec3(0.0f, 0.0f, 1.0f));
+            glm::mat4 scl = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
+
+            /* Initialize the MVP matrices */ 
+            glm::mat4 model = trans * rot * scl;
+            // glm::mat4 model = CubeController::getInstance().getModelMatrix();
+            glm::mat4 view = camera.GetViewMatrix();
+            glm::mat4 proj = camera.GetProjectionMatrix();
+            glm::mat4 mvp = proj * view * model;
+
+            /* Update shaders paramters and draw to the screen */
+            shader.Bind();
+            shader.SetUniform4f("u_Color", color);
+            shader.SetUniformMat4f("u_MVP", mvp);
+            shader.SetUniform1i("u_Texture", 0);
+            va.Bind();
+            ib.Bind();
+            GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr));
+
+            /* Swap front and back buffers */
+            glfwSwapBuffers(window);
+
+            /* Poll for and process events */
+            glfwPollEvents();
         }
     }
-    std::string outputPath = std::string("res/results/image1.png");
-    int result = stbi_write_png(outputPath.c_str(), PIXEL_WIDTH, PIXEL_HEIGHT, 3, image, PIXEL_WIDTH * 3);
-    delete[] image;
-    if (!result){
-    std::cout << "Failed to write image to: " << outputPath << std::endl;
-    }
-    return result;
-}
 
-
-int main() {
-    auto start = std::chrono::steady_clock::now();
-    std::string sceneFilePath = "../files/scene6.txt"; //placeholder
-    rayTraceScene(sceneFilePath);
-    auto end = std::chrono::steady_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    std::cout << "Rendering time (ms): " << duration.count()  << std::endl;
+    glfwTerminate();
     return 0;
 }

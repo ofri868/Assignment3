@@ -1,4 +1,11 @@
 #include <Camera.h>
+#include "CubeController.h"
+
+const glm::vec3 X_AXIS = glm::vec3(1.0f, 0.0f, 0.0f);
+const glm::vec3 Y_AXIS = glm::vec3(0.0f, 1.0f, 0.0f);
+const glm::vec3 Z_AXIS = glm::vec3(0.0f, 0.0f, 1.0f);
+
+CubeController& cubeController = CubeController::getInstance();
 
 void Camera::SetOrthographic(float near, float far)
 {
@@ -26,18 +33,34 @@ void KeyCallback(GLFWwindow* window, int key, int scanCode, int action, int mods
     {
         switch (key)
         {
-            case GLFW_KEY_UP:
-                std::cout << "UP Pressed" << std::endl;
+            // case GLFW_KEY_UP:
+            //     std::cout << "UP Pressed" << std::endl;
+            //     break;
+            // case GLFW_KEY_DOWN:
+            //     std::cout << "DOWN Pressed" << std::endl;
+            //     break;
+            // case GLFW_KEY_LEFT:
+            //     std::cout << "LEFT Pressed" << std::endl;
+            //     break;
+            // case GLFW_KEY_RIGHT:
+            //     std::cout << "RIGHT Pressed" << std::endl;
+            //     break;
+            case GLFW_KEY_A:
+                cubeController.enlargeRotationAngle();
                 break;
-            case GLFW_KEY_DOWN:
-                std::cout << "DOWN Pressed" << std::endl;
+            case GLFW_KEY_Z:
+                cubeController.minimizeRotationAngle();
                 break;
-            case GLFW_KEY_LEFT:
-                std::cout << "LEFT Pressed" << std::endl;
+            case GLFW_KEY_SPACE:
+                cubeController.changeRotationDirection();
                 break;
-            case GLFW_KEY_RIGHT:
-                std::cout << "RIGHT Pressed" << std::endl;
+            case GLFW_KEY_R:
+                cubeController.rotateCube(Z_AXIS);
                 break;
+            case GLFW_KEY_U:
+                cubeController.rotateCube(X_AXIS);
+                break;
+
             default:
                 break;
         }
