@@ -14,7 +14,7 @@
 
 #include <iostream>
 
-#include "CubeController.h"
+#include "RubiksCube.h"
 
 /* Window size */
 const unsigned int width = 800;
@@ -23,86 +23,72 @@ const unsigned int height = 800;
 const float near = 0.1f;
 const float far = 100.0f;
 
-// /* Shape vertices coordinates with positions, colors, and corrected texCoords */
-// float vertices[] = {
-//     // positions            // colors            // texCoords
-//     -0.5f, -0.5f,  0.5f,    1.0f, 0.0f, 0.0f,    0.0f, 0.0f,  // Bottom-left
-//      0.5f, -0.5f,  0.5f,    0.0f, 1.0f, 0.0f,    1.0f, 0.0f,  // Bottom-right
-//      0.5f,  0.5f,  0.5f,    0.0f, 0.0f, 1.0f,    1.0f, 1.0f,  // Top-right
-//     -0.5f,  0.5f,  0.5f,    1.0f, 1.0f, 0.0f,    0.0f, 1.0f,  // Top-left
-// };
+// Cube mesh vertices and indices
+float vertices[] = {
+        // positions           // colors           // texCoords
 
-// /* Indices for vertices order */
-// unsigned int indices[] = {
-//     0, 1, 2, 
-//     2, 3, 0
-// };
+        // Front Face (z=0.5f, in front of camera)  // white (opposite of yellow)
+        -0.5f, -0.5f, 0.5f,    1.0f, 1.0f, 1.0f,   0.0f, 0.0f, // Front-bottom-left
+         0.5f, -0.5f, 0.5f,    1.0f, 1.0f, 1.0f,   1.0f, 0.0f, // Front-bottom-right
+         0.5f,  0.5f, 0.5f,    1.0f, 1.0f, 1.0f,   1.0f, 1.0f, // Front-top-right
+        -0.5f,  0.5f, 0.5f,    1.0f, 1.0f, 1.0f,   0.0f, 1.0f, // Front-top-left
 
-// float vertices[] = {
-//         // positions           // colors           // texCoords
-//         // Front Face          // red
-//         -0.5f, -0.5f, 0.5f,    1.0f, 0.0f, 0.0f,   0.0f, 0.0f, // Front-bottom-left
-//          0.5f, -0.5f, 0.5f,    1.0f, 0.0f, 0.0f,   1.0f, 0.0f, // Front-bottom-right
-//          0.5f,  0.5f, 0.5f,    1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // Front-top-right
-//         -0.5f,  0.5f, 0.5f,    1.0f, 0.0f, 0.0f,   0.0f, 1.0f, // Front-top-left
+        // Back Face (z=0.5f, behind camera)  // yellow (opposite of white)
+        -0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 0.0f, // Back-bottom-left
+         0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Back-bottom-right
+         0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   1.0f, 1.0f, // Back-top-right
+        -0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f, // Back-top-left
 
-//         // Back Face           // orange
-//         -0.5f, -0.5f, -0.5f,   1.0f, 0.5f, 0.0f,   0.0f, 0.0f, // Back-bottom-left
-//          0.5f, -0.5f, -0.5f,   1.0f, 0.5f, 0.0f,   1.0f, 0.0f, // Back-bottom-right
-//          0.5f,  0.5f, -0.5f,   1.0f, 0.5f, 0.0f,   1.0f, 1.0f, // Back-top-right
-//         -0.5f,  0.5f, -0.5f,   1.0f, 0.5f, 0.0f,   0.0f, 1.0f,  // Back-top-left
+        // Left Face           // blue (opposite of green)
+        -0.5f, -0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // Back-bottom-left
+        -0.5f, -0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 0.0f, // Front-bottom-left
+        -0.5f,  0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f, // Front-top-left
+        -0.5f,  0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f, // Back-top-left
 
-//         // Left Face           // blue
-//         -0.5f, -0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // Back-bottom-left
-//         -0.5f, -0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 0.0f, // Front-bottom-left
-//         -0.5f,  0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f, // Front-top-left
-//         -0.5f,  0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f, // Back-top-left
+        // Right Face          // green (opposite of blue)
+         0.5f, -0.5f,  0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f, // Back-bottom-right
+         0.5f, -0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Front-bottom-right
+         0.5f,  0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f, // Front-top-right
+         0.5f,  0.5f,  0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f, // Back-top-right
 
-//         // Right Face          // green
-//          0.5f, -0.5f,  0.5f,    0.0f, 1.0f, 0.0f,   0.0f, 0.0f, // Back-bottom-right
-//          0.5f, -0.5f, -0.5f,    0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Front-bottom-right
-//          0.5f,  0.5f, -0.5f,    0.0f, 1.0f, 0.0f,   1.0f, 1.0f, // Front-top-right
-//          0.5f,  0.5f,  0.5f,    0.0f, 1.0f, 0.0f,   0.0f, 1.0f, // Back-top-right
+        // Top Face            // orange (opposite of red)
+        -0.5f,  0.5f,  0.5f,   1.0f, 0.5f, 0.0f,   0.0f, 0.0f, // Back-top-left
+         0.5f,  0.5f,  0.5f,   1.0f, 0.5f, 0.0f,   1.0f, 0.0f, // Back-top-right
+         0.5f,  0.5f, -0.5f,   1.0f, 0.5f, 0.0f,   1.0f, 1.0f, // Front-top-right
+        -0.5f,  0.5f, -0.5f,   1.0f, 0.5f, 0.0f,   0.0f, 1.0f, // Front-top-left
 
-//         // Top Face            // white
-//         -0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 0.0f, // Back-top-left
-//          0.5f,  0.5f,  0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 0.0f, // Back-top-right
-//          0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 1.0f, // Front-top-right
-//         -0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 1.0f, // Front-top-left
+        // Bottom Face         // red (opposite of orange)
+        -0.5f, -0.5f, -0.5f,   1.0f, 0.0f, 0.0f,   0.0f, 0.0f, // Back-bottom-left
+         0.5f, -0.5f, -0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 0.0f, // Back-bottom-right
+         0.5f, -0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // Front-bottom-right
+        -0.5f, -0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   0.0f, 1.0f, // Front-bottom-left
+    };
 
-//         // Bottom Face         // yellow
-//         -0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 0.0f, // Back-bottom-left
-//          0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Back-bottom-right
-//          0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 0.0f,   1.0f, 1.0f, // Front-bottom-right
-//         -0.5f, -0.5f,  0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f, // Front-bottom-left
+unsigned int indices[] = {
+    // Front face
+    0, 1, 2,
+    2, 3, 0,
 
-//     };
+    // Back face
+    4, 5, 6,
+    6, 7, 4,
 
-// unsigned int indices[] = {
-//     // Front face
-//     0, 1, 2,
-//     2, 3, 0,
+    // Left face
+    8, 9, 10,
+    10, 11, 8,
 
-//     // Back face
-//     4, 5, 6,
-//     6, 7, 4,
+    // Right face
+    12, 13, 14,
+    14, 15, 12,
 
-//     // Left face
-//     8, 9, 10,
-//     10, 11, 8,
+    // Top face
+    16, 17, 18,
+    18, 19, 16,
 
-//     // Right face
-//     12, 13, 14,
-//     14, 15, 12,
-
-//     // Top face
-//     16, 17, 18,
-//     18, 19, 16,
-
-//     // Bottom face
-//     20, 21, 22,
-//     22, 23, 20
-// };
+    // Bottom face
+    20, 21, 22,
+    22, 23, 20
+};
 
 int main(int argc, char* argv[])
 {
@@ -145,14 +131,10 @@ int main(int argc, char* argv[])
         GLCall(glEnable(GL_BLEND));
         GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
-        Cube &c = CubeController::getInstance().getCube();
-        const float *vertices = c.getVertices();
-        const unsigned int *indices = c.getIndices();
-
         /* Generate VAO, VBO, EBO and bind them */
         VertexArray va;
-        VertexBuffer vb(vertices, c.getVerticesSize());
-        IndexBuffer ib(indices, c.getIndicesSize());
+        VertexBuffer vb(vertices, sizeof(vertices));
+        IndexBuffer ib(indices, sizeof(indices));
 
         VertexBufferLayout layout;
         layout.Push<float>(3);  // positions
@@ -181,7 +163,7 @@ int main(int argc, char* argv[])
         Camera camera(width, height);
         camera.SetOrthographic(near, far);
         camera.EnableInputs(window);
-        glm::mat4 rot = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(1.0f));
+        // glm::mat4 rot = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(1.0f));
 
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
@@ -195,27 +177,36 @@ int main(int argc, char* argv[])
             /* Initialize uniform color */
             glm::vec4 color = glm::vec4(1.0, 1.0f, 1.0f, 1.0f);
 
+            /* Global cubie scale*/
+            float globalScale = 1.0f / 3.0f;
+
             /* Initialize the model Translate, Rotate and Scale matrices */
-            glm::mat4 trans = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-            rot = glm::rotate(rot, 0.007f, glm::vec3(0.0f, 0.0f, 1.0f));
-            glm::mat4 scl = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f));
+            for(int x = -1; x <= 1; x++) {
+                for(int y = -1; y <= 1; y++) {
+                    for(int z = -1; z <= 1; z++) {
+                        RubiksCube& rubiksCube = RubiksCube::getInstance();
+                        Cubie *cubes = rubiksCube.getCubes();
+                        int index = (x + 1) * 9 + (y + 1) * 3 + (z + 1);
+                        glm::mat4 trans = glm::translate(glm::mat4(1.0f), cubes[index].position);
+                        glm::mat4 rot = cubes[index].rotationMatrix;
+                        glm::mat4 scl = glm::scale(glm::mat4(1.0f), glm::vec3(globalScale));
+                        glm::mat4 model = trans * rot * scl;
+                        glm::mat4 view = camera.GetViewMatrix();
+                        glm::mat4 proj = camera.GetProjectionMatrix();
+                        glm::mat4 mvp = proj * view * model;
 
-            /* Initialize the MVP matrices */ 
-            glm::mat4 model = trans * rot * scl;
-            // glm::mat4 model = CubeController::getInstance().getModelMatrix();
-            glm::mat4 view = camera.GetViewMatrix();
-            glm::mat4 proj = camera.GetProjectionMatrix();
-            glm::mat4 mvp = proj * view * model;
-
-            /* Update shaders paramters and draw to the screen */
-            shader.Bind();
-            shader.SetUniform4f("u_Color", color);
-            shader.SetUniformMat4f("u_MVP", mvp);
-            shader.SetUniform1i("u_Texture", 0);
-            va.Bind();
-            ib.Bind();
-            GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr));
-
+                        /* Update shaders paramters and draw to the screen */
+                        shader.Bind();
+                        shader.SetUniform4f("u_Color", color);
+                        shader.SetUniformMat4f("u_MVP", mvp);
+                        shader.SetUniform1i("u_Texture", 0);
+                        va.Bind();
+                        ib.Bind();
+                        GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr));   
+                    }
+                }
+            }
+            
             /* Swap front and back buffers */
             glfwSwapBuffers(window);
 

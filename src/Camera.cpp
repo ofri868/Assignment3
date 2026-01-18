@@ -1,11 +1,5 @@
 #include <Camera.h>
-#include "CubeController.h"
-
-const glm::vec3 X_AXIS = glm::vec3(1.0f, 0.0f, 0.0f);
-const glm::vec3 Y_AXIS = glm::vec3(0.0f, 1.0f, 0.0f);
-const glm::vec3 Z_AXIS = glm::vec3(0.0f, 0.0f, 1.0f);
-
-CubeController& cubeController = CubeController::getInstance();
+#include "RubiksCube.h"
 
 void Camera::SetOrthographic(float near, float far)
 {
@@ -31,6 +25,7 @@ void KeyCallback(GLFWwindow* window, int key, int scanCode, int action, int mods
 
     if (action == GLFW_PRESS || action == GLFW_REPEAT)
     {
+        RubiksCube &cube = RubiksCube::getInstance();
         switch (key)
         {
             // case GLFW_KEY_UP:
@@ -46,21 +41,32 @@ void KeyCallback(GLFWwindow* window, int key, int scanCode, int action, int mods
             //     std::cout << "RIGHT Pressed" << std::endl;
             //     break;
             case GLFW_KEY_A:
-                cubeController.enlargeRotationAngle();
+                cube.setRotationAngle(180.0f);
                 break;
             case GLFW_KEY_Z:
-                cubeController.minimizeRotationAngle();
+                cube.setRotationAngle(90.0f);
                 break;
             case GLFW_KEY_SPACE:
-                cubeController.changeRotationDirection();
+                cube.changeRotationDirection();
                 break;
             case GLFW_KEY_R:
-                cubeController.rotateCube(Z_AXIS);
+                cube.rotateFace(3);
+                break;
+            case GLFW_KEY_L:
+                cube.rotateFace(2);
                 break;
             case GLFW_KEY_U:
-                cubeController.rotateCube(X_AXIS);
+                cube.rotateFace(4);
                 break;
-
+            case GLFW_KEY_D:
+                cube.rotateFace(5);
+                break;
+            case GLFW_KEY_B:
+                cube.rotateFace(1);
+                break;
+            case GLFW_KEY_F:
+                cube.rotateFace(0);
+                break;
             default:
                 break;
         }
