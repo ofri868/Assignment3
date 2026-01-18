@@ -19,7 +19,7 @@
 /* Window size */
 const unsigned int width = 800;
 const unsigned int height = 800;
-// const float FOVdegree = 45.0f;  // Field Of View Angle
+const float FOVdegree = 45.0f;  // Field Of View Angle
 const float near = 0.1f;
 const float far = 100.0f;
 
@@ -161,9 +161,8 @@ int main(int argc, char* argv[])
 
         /* Create camera */
         Camera camera(width, height);
-        camera.SetOrthographic(near, far);
+        camera.setPerspective(FOVdegree, near, far);
         camera.EnableInputs(window);
-        // glm::mat4 rot = glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(1.0f));
 
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
@@ -178,18 +177,22 @@ int main(int argc, char* argv[])
             glm::vec4 color = glm::vec4(1.0, 1.0f, 1.0f, 1.0f);
 
             /* Global cubie scale*/
-            float globalScale = 1.0f / 3.0f;
+            float globalScale = OFFSET;
 
-            /* Initialize the model Translate, Rotate and Scale matrices */
+            /* Get Rubik's Cube instance and its cubes */
+            RubiksCube& rubiksCube = RubiksCube::getInstance();
+            Cubie *cubes = rubiksCube.getCubes();
+
             for(int x = -1; x <= 1; x++) {
                 for(int y = -1; y <= 1; y++) {
                     for(int z = -1; z <= 1; z++) {
-                        RubiksCube& rubiksCube = RubiksCube::getInstance();
-                        Cubie *cubes = rubiksCube.getCubes();
                         int index = (x + 1) * 9 + (y + 1) * 3 + (z + 1);
+                        /* Initialize the model Translate, Rotate and Scale matrices */
                         glm::mat4 trans = glm::translate(glm::mat4(1.0f), cubes[index].position);
                         glm::mat4 rot = cubes[index].rotationMatrix;
                         glm::mat4 scl = glm::scale(glm::mat4(1.0f), glm::vec3(globalScale));
+
+                        /* Calculate Model-View-Projection matrix */
                         glm::mat4 model = trans * rot * scl;
                         glm::mat4 view = camera.GetViewMatrix();
                         glm::mat4 proj = camera.GetProjectionMatrix();

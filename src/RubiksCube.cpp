@@ -5,8 +5,6 @@ const glm::vec3 X_AXIS = glm::vec3(1.0f, 0.0f, 0.0f);
 const glm::vec3 Y_AXIS = glm::vec3(0.0f, 1.0f, 0.0f);
 const glm::vec3 Z_AXIS = glm::vec3(0.0f, 0.0f, 1.0f);
 
-float OFFSET = 1.0f / 3.0f;
-
 RubiksCube::RubiksCube(): rotationAngle(glm::radians(90.0f)), cubes{}
 {
     for(int x = -1; x <= 1; x++) {
@@ -73,20 +71,20 @@ void RubiksCube::rotateFace(int faceIndex)
 {
     switch(faceIndex) {
         case 0: // Front face
-            // x from -1 to 1, y from -1 to 1, z = -1
-            rotateFace(-1, -1, -1, 1, 1, -1, -Z_AXIS);
-            break;
-        case 1: // Back face
             // x from -1 to 1, y from -1 to 1, z = 1
             rotateFace(-1, -1, 1, 1, 1, 1, -Z_AXIS);
             break;
+        case 1: // Back face
+            // x from -1 to 1, y from -1 to 1, z = -1
+            rotateFace(-1, -1, -1, 1, 1, -1, Z_AXIS);
+            break;
         case 2: // Left face
-            // x = -1, y from -1 to 1, z from -1 to 1
-            rotateFace(-1, -1, -1, -1, 1, 1, X_AXIS);
+            // x = 1, y from -1 to 1, z from -1 to 1
+            rotateFace(1, -1, -1, 1, 1, 1, -X_AXIS);
             break;
         case 3: // Right face
-            // x = 1, y from -1 to 1, z from -1 to 1
-            rotateFace(1, -1, -1, 1, 1, 1, X_AXIS);
+            // x = -1, y from -1 to 1, z from -1 to 1
+            rotateFace(-1, -1, -1, -1, 1, 1, -X_AXIS);
             break;
         case 4: // Top face
             // y = 1, x from -1 to 1, z from -1 to 1

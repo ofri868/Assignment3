@@ -21,7 +21,7 @@ class Camera
         glm::mat4 m_Projection = glm::mat4(1.0f);
 
         // View matrix paramters
-        glm::vec3 m_Position = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 m_Position = glm::vec3(0.0f, 0.0f, 8.0f);
         glm::vec3 m_Orientation = glm::vec3(0.0f, 0.0f, -1.0f);
         glm::vec3 m_Up = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -48,6 +48,9 @@ class Camera
 
         // Update Projection matrix for Orthographic mode
         void SetOrthographic(float near, float far);
+
+        // Update Projection matrix for Perspective mode
+        void setPerspective(float FOVdegree, float near, float far);
 
         // Handle camera inputs
         void EnableInputs(GLFWwindow* window);

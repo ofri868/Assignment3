@@ -4,6 +4,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <array>
 
+static constexpr float OFFSET = 1.0f;
+
 struct Cubie {
     glm::vec3 position;
     glm::mat4 rotationMatrix;

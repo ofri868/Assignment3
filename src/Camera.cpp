@@ -11,6 +11,18 @@ void Camera::SetOrthographic(float near, float far)
     m_View = glm::lookAt(m_Position, m_Position + m_Orientation, m_Up);
 }
 
+void Camera::setPerspective(float FOVdegree, float near, float far)
+{
+    m_Near = near;
+    m_Far = far;
+    float aspect = (float)m_Width / (float)m_Height;
+
+    m_Projection = glm::perspective(glm::radians(FOVdegree), aspect, near, far);
+    m_View = glm::lookAt(m_Position, m_Position + m_Orientation, m_Up);
+}
+
+
+
 /////////////////////
 // Input Callbacks //
 /////////////////////
@@ -28,18 +40,6 @@ void KeyCallback(GLFWwindow* window, int key, int scanCode, int action, int mods
         RubiksCube &cube = RubiksCube::getInstance();
         switch (key)
         {
-            // case GLFW_KEY_UP:
-            //     std::cout << "UP Pressed" << std::endl;
-            //     break;
-            // case GLFW_KEY_DOWN:
-            //     std::cout << "DOWN Pressed" << std::endl;
-            //     break;
-            // case GLFW_KEY_LEFT:
-            //     std::cout << "LEFT Pressed" << std::endl;
-            //     break;
-            // case GLFW_KEY_RIGHT:
-            //     std::cout << "RIGHT Pressed" << std::endl;
-            //     break;
             case GLFW_KEY_A:
                 cube.setRotationAngle(180.0f);
                 break;
