@@ -5,6 +5,9 @@
 #include <array>
 
 static constexpr float OFFSET = 1.0f;
+static constexpr glm::vec3 X_AXIS = glm::vec3(1.0f, 0.0f, 0.0f);
+static constexpr glm::vec3 Y_AXIS = glm::vec3(0.0f, 1.0f, 0.0f);
+static constexpr glm::vec3 Z_AXIS = glm::vec3(0.0f, 0.0f, 1.0f);
 
 struct Cubie {
     glm::vec3 position;
@@ -37,6 +40,8 @@ class RubiksCube {
             5: Bottom face
         */
         void rotateFace(int faceIndex);
+
+        void rotateCube(glm::vec3 axis);
 
         void changeRotationDirection() { rotationAngle *= -1.0f; }
 

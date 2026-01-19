@@ -4,10 +4,6 @@
 
 #define sign(x) ((x) < 0 ? -1 : 1)
 
-const glm::vec3 X_AXIS = glm::vec3(1.0f, 0.0f, 0.0f);
-const glm::vec3 Y_AXIS = glm::vec3(0.0f, 1.0f, 0.0f);
-const glm::vec3 Z_AXIS = glm::vec3(0.0f, 0.0f, 1.0f);
-
 RubiksCube::RubiksCube(): rotationAngle(glm::radians(-90.0f)), cubes{}
 {
     for(int x = -1; x <= 1; x++) {
@@ -101,6 +97,8 @@ void RubiksCube::rotateFace(int faceIndex)
             break;
     }
 }
+
+void RubiksCube::rotateCube(glm::vec3 axis) { rotate(-1, -1, -1, 1, 1, 1, axis); }
 
 void RubiksCube::setRotationAngle(float degrees)
 {
