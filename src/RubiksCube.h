@@ -13,14 +13,14 @@ struct Cubie {
 
 class RubiksCube {
     private:
-        // is positive for clockwise, negative for counter-clockwise
+        // is negative for clockwise, positive for counter-clockwise
         float rotationAngle;
 
         std::array<Cubie, 27> cubes;
 
         RubiksCube();
 
-        void rotateFace(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, glm::vec3 axis);
+        void rotate(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, glm::vec3 axis);
 
     public:
         static RubiksCube &getInstance() {

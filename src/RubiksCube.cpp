@@ -1,11 +1,14 @@
 #include "RubiksCube.h"
 #include <vector>
+#include <cstdio>
+
+#define sign(x) ((x) < 0 ? -1 : 1)
 
 const glm::vec3 X_AXIS = glm::vec3(1.0f, 0.0f, 0.0f);
 const glm::vec3 Y_AXIS = glm::vec3(0.0f, 1.0f, 0.0f);
 const glm::vec3 Z_AXIS = glm::vec3(0.0f, 0.0f, 1.0f);
 
-RubiksCube::RubiksCube(): rotationAngle(glm::radians(90.0f)), cubes{}
+RubiksCube::RubiksCube(): rotationAngle(glm::radians(-90.0f)), cubes{}
 {
     for(int x = -1; x <= 1; x++) {
         for(int y = -1; y <= 1; y++) {
@@ -28,7 +31,7 @@ glm::vec3 getOriginOfRotation(int minX, int minY, int minZ, int maxX, int maxY, 
     return origin;
 }
 
-void RubiksCube::rotateFace(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, glm::vec3 axis)
+void RubiksCube::rotate(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, glm::vec3 axis)
 {
     // Pre-computing affine map for repositiong the cubes
     glm::vec3 originOfRotation = OFFSET * getOriginOfRotation(minX, minY, minZ, maxX, maxY, maxZ);
@@ -72,27 +75,27 @@ void RubiksCube::rotateFace(int faceIndex)
     switch(faceIndex) {
         case 0: // Front face
             // x from -1 to 1, y from -1 to 1, z = 1
-            rotateFace(-1, -1, 1, 1, 1, 1, -Z_AXIS);
+            rotate(-1, -1, 1, 1, 1, 1, Z_AXIS);
             break;
         case 1: // Back face
             // x from -1 to 1, y from -1 to 1, z = -1
-            rotateFace(-1, -1, -1, 1, 1, -1, Z_AXIS);
+            rotate(-1, -1, -1, 1, 1, -1, -Z_AXIS);
             break;
         case 2: // Left face
-            // x = 1, y from -1 to 1, z from -1 to 1
-            rotateFace(1, -1, -1, 1, 1, 1, -X_AXIS);
+            // x = -1, y from -1 to 1, z from -1 to 1
+            rotate(-1, -1, -1, -1, 1, 1, -X_AXIS);
             break;
         case 3: // Right face
-            // x = -1, y from -1 to 1, z from -1 to 1
-            rotateFace(-1, -1, -1, -1, 1, 1, -X_AXIS);
+            // x = 1, y from -1 to 1, z from -1 to 1
+            rotate(1, -1, -1, 1, 1, 1, X_AXIS);
             break;
         case 4: // Top face
             // y = 1, x from -1 to 1, z from -1 to 1
-            rotateFace(-1, 1, -1, 1, 1, 1, Y_AXIS);
+            rotate(-1, 1, -1, 1, 1, 1, Y_AXIS);
             break;
         case 5: // Bottom face
             // y = -1, x from -1 to 1, z from -1 to 1
-            rotateFace(-1, -1, -1, 1, -1, 1, Y_AXIS);
+            rotate(-1, -1, -1, 1, -1, 1, -Y_AXIS);
             break;
         default:
             break;
@@ -107,5 +110,5 @@ void RubiksCube::setRotationAngle(float degrees)
         degrees = 90;
     }
 
-    rotationAngle = glm::radians(degrees);
+    rotationAngle = sign(rotationAngle) * glm::radians(degrees);
 }
