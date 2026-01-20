@@ -1,13 +1,12 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include <array>
 
-static constexpr float OFFSET = 1.0f;
-static constexpr glm::vec3 X_AXIS = glm::vec3(1.0f, 0.0f, 0.0f);
-static constexpr glm::vec3 Y_AXIS = glm::vec3(0.0f, 1.0f, 0.0f);
-static constexpr glm::vec3 Z_AXIS = glm::vec3(0.0f, 0.0f, 1.0f);
+static constexpr float CUBIE_SCALE = 1.0f;
+static constexpr glm::vec3 CUBE_X_AXIS = glm::vec3(1.0f, 0.0f, 0.0f);
+static constexpr glm::vec3 CUBE_Y_AXIS = glm::vec3(0.0f, 1.0f, 0.0f);
+static constexpr glm::vec3 CUBE_Z_AXIS = glm::vec3(0.0f, 0.0f, 1.0f);
 
 struct Cubie {
     glm::vec3 position;

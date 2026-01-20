@@ -177,7 +177,7 @@ int main(int argc, char* argv[])
             glm::vec4 color = glm::vec4(1.0, 1.0f, 1.0f, 1.0f);
 
             /* Global cubie scale*/
-            float globalScale = OFFSET;
+            float globalScale = CUBIE_SCALE;
 
             /* Get Rubik's Cube instance and its cubes */
             RubiksCube& rubiksCube = RubiksCube::getInstance();

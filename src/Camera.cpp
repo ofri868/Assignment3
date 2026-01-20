@@ -1,5 +1,9 @@
 #include <Camera.h>
+
 #include "RubiksCube.h"
+
+const float EPS = 0.17f; 
+const float SENSETIVITY = 0.01f;
 
 void Camera::SetOrthographic(float near, float far)
 {
@@ -19,6 +23,34 @@ void Camera::setPerspective(float FOVdegree, float near, float far)
 
     m_Projection = glm::perspective(glm::radians(FOVdegree), aspect, near, far);
     m_View = glm::lookAt(m_Position, m_Position + m_Orientation, m_Up);
+}
+
+void Camera::updateViewMatrix()
+{
+    m_View = glm::lookAt(m_Position, m_Position + m_Orientation, m_Up);
+}
+
+void Camera::updatePosition(const glm::vec3& position)
+{
+    m_Position += position;
+    updateViewMatrix();
+}
+
+void Camera::rotate()
+{
+    float dx = m_NewMouseX;
+    float angleX = dx / glm::pi<float>();
+    glm::mat4 rotX = glm::rotate(glm::mat4(1.0f), angleX * SENSETIVITY, m_MouseYAxis());
+
+    float dy = m_NewMouseY;
+    float angleY = dy / glm::pi<float>();
+    glm::mat4 rotY = glm::rotate(glm::mat4(1.0f), angleY * SENSETIVITY, -m_MouseXAxis());
+
+    glm::mat4 rot = rotY * rotX;
+    m_Position = glm::vec3(rot * glm::vec4(m_Position, 1));
+    m_Orientation = glm::vec3(rot * glm::vec4(m_Orientation, 1));
+
+    updateViewMatrix();
 }
 
 
@@ -68,16 +100,16 @@ void KeyCallback(GLFWwindow* window, int key, int scanCode, int action, int mods
                 cube.rotateFace(0);
                 break;
             case GLFW_KEY_UP:
-                cube.rotateCube(X_AXIS);
+                cube.rotateCube(CUBE_X_AXIS);
                 break;
             case GLFW_KEY_DOWN:
-                cube.rotateCube(-X_AXIS);
+                cube.rotateCube(-CUBE_X_AXIS);
                 break;
             case GLFW_KEY_LEFT:
-                cube.rotateCube(-Y_AXIS);
+                cube.rotateCube(-CUBE_Y_AXIS);
                 break;  
             case GLFW_KEY_RIGHT:
-                cube.rotateCube(Y_AXIS);
+                cube.rotateCube(CUBE_Y_AXIS);
                 break;
             default:
                 break;
@@ -112,7 +144,9 @@ void CursorPosCallback(GLFWwindow* window, double currMouseX, double currMouseY)
 
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
+        printf("Delta X: %.2f, Delta Y: %.2f\n", camera->m_NewMouseX, camera->m_NewMouseY);
         std::cout << "MOUSE LEFT Motion" << std::endl;
+        camera->rotate();
     }
     else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
     {
@@ -128,7 +162,8 @@ void ScrollCallback(GLFWwindow* window, double scrollOffsetX, double scrollOffse
         return;
     }
 
-    std::cout << "SCROLL Motion" << std::endl;
+    // Zoom in and out
+    camera->updatePosition(glm::vec3(0.0f, 0.0f, -(1.0f + EPS) * (float)scrollOffsetY));
 }
 
 void Camera::EnableInputs(GLFWwindow* window)

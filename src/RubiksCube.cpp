@@ -1,8 +1,14 @@
 #include "RubiksCube.h"
-#include <vector>
+
+#include <glm/gtc/matrix_transform.hpp>
 #include <cstdio>
 
 #define sign(x) ((x) < 0 ? -1 : 1)
+
+const float OFFSET = CUBIE_SCALE;
+const glm::vec3 X_AXIS = CUBE_X_AXIS;
+const glm::vec3 Y_AXIS = CUBE_Y_AXIS;
+const glm::vec3 Z_AXIS = CUBE_Z_AXIS;
 
 RubiksCube::RubiksCube(): rotationAngle(glm::radians(-90.0f)), cubes{}
 {

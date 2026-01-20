@@ -36,6 +36,10 @@ class Camera
         float m_Right = 1.0f;
         float m_Bottom = -1.0f; 
         float m_Top = 1.0f;
+
+        // Update Viewing matrix
+        void updateViewMatrix();
+
     public:
         // Prevent the camera from jumping around when first clicking left click
         double m_OldMouseX = 0.0;
@@ -54,6 +58,17 @@ class Camera
 
         // Handle camera inputs
         void EnableInputs(GLFWwindow* window);
+
+        // Update camera position
+        void updatePosition(const glm::vec3& position);
+
+        // Rotates camera postion according to newMouseX and newMouseY
+        void rotate();
+
+        // Return the axis of the mouse
+        glm::vec3 m_MouseXAxis() { return glm::normalize(glm::cross(m_Position, m_Up)); }
+        glm::vec3 m_MouseYAxis() { return glm::normalize(m_Up); }
+        glm::vec3 m_MouseZAxis() { return glm::normalize(m_Position); }
 
         inline glm::mat4 GetViewMatrix() const { return m_View; }
         inline glm::mat4 GetProjectionMatrix() const { return m_Projection; }
