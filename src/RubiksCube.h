@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <array>
 
-static constexpr float CUBIE_SCALE = 1.0f;
+static constexpr float CUBIE_SCALE = 1.0f - 5e-3f; // Slightly smaller than 1.0f to avoid z-fighting
 static constexpr glm::vec3 CUBE_X_AXIS = glm::vec3(1.0f, 0.0f, 0.0f);
 static constexpr glm::vec3 CUBE_Y_AXIS = glm::vec3(0.0f, 1.0f, 0.0f);
 static constexpr glm::vec3 CUBE_Z_AXIS = glm::vec3(0.0f, 0.0f, 1.0f);

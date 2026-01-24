@@ -25,44 +25,44 @@ const float far = 100.0f;
 
 // Cube mesh vertices and indices
 float vertices[] = {
-        // positions           // colors           // texCoords
+    // positions           // colors           // texCoords
 
-        // Front Face (z=0.5f, in front of camera)  // white (opposite of yellow)
-        -0.5f, -0.5f, 0.5f,    1.0f, 1.0f, 1.0f,   0.0f, 0.0f, // Front-bottom-left
-         0.5f, -0.5f, 0.5f,    1.0f, 1.0f, 1.0f,   1.0f, 0.0f, // Front-bottom-right
-         0.5f,  0.5f, 0.5f,    1.0f, 1.0f, 1.0f,   1.0f, 1.0f, // Front-top-right
-        -0.5f,  0.5f, 0.5f,    1.0f, 1.0f, 1.0f,   0.0f, 1.0f, // Front-top-left
+    // Front Face (z=0.5f, in front of camera)  // white (opposite of yellow)
+    -0.5f, -0.5f, 0.5f,    1.0f, 1.0f, 1.0f,   0.0f, 0.0f, // Front-bottom-left
+     0.5f, -0.5f, 0.5f,    1.0f, 1.0f, 1.0f,   1.0f, 0.0f, // Front-bottom-right
+     0.5f,  0.5f, 0.5f,    1.0f, 1.0f, 1.0f,   1.0f, 1.0f, // Front-top-right
+    -0.5f,  0.5f, 0.5f,    1.0f, 1.0f, 1.0f,   0.0f, 1.0f, // Front-top-left
 
-        // Back Face (z=0.5f, behind camera)  // yellow (opposite of white)
-        -0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 0.0f, // Back-bottom-left
-         0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Back-bottom-right
-         0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   1.0f, 1.0f, // Back-top-right
-        -0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f, // Back-top-left
+    // Back Face (z=0.5f, behind camera)  // yellow (opposite of white)
+    -0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 0.0f, // Back-bottom-left
+     0.5f, -0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Back-bottom-right
+     0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   1.0f, 1.0f, // Back-top-right
+    -0.5f,  0.5f, -0.5f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f, // Back-top-left
 
-        // Left Face           // blue (opposite of green)
-        -0.5f, -0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // Back-bottom-left
-        -0.5f, -0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 0.0f, // Front-bottom-left
-        -0.5f,  0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f, // Front-top-left
-        -0.5f,  0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f, // Back-top-left
+    // Left Face           // blue (opposite of green)
+    -0.5f, -0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // Back-bottom-left
+    -0.5f, -0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 0.0f, // Front-bottom-left
+    -0.5f,  0.5f,  0.5f,   0.0f, 0.0f, 1.0f,   1.0f, 1.0f, // Front-top-left
+    -0.5f,  0.5f, -0.5f,   0.0f, 0.0f, 1.0f,   0.0f, 1.0f, // Back-top-left
 
-        // Right Face          // green (opposite of blue)
-         0.5f, -0.5f,  0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f, // Back-bottom-right
-         0.5f, -0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Front-bottom-right
-         0.5f,  0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f, // Front-top-right
-         0.5f,  0.5f,  0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f, // Back-top-right
+    // Right Face          // green (opposite of blue)
+     0.5f, -0.5f,  0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 0.0f, // Back-bottom-right
+     0.5f, -0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // Front-bottom-right
+     0.5f,  0.5f, -0.5f,   0.0f, 1.0f, 0.0f,   1.0f, 1.0f, // Front-top-right
+     0.5f,  0.5f,  0.5f,   0.0f, 1.0f, 0.0f,   0.0f, 1.0f, // Back-top-right
 
-        // Top Face            // orange (opposite of red)
-        -0.5f,  0.5f,  0.5f,   1.0f, 0.5f, 0.0f,   0.0f, 0.0f, // Back-top-left
-         0.5f,  0.5f,  0.5f,   1.0f, 0.5f, 0.0f,   1.0f, 0.0f, // Back-top-right
-         0.5f,  0.5f, -0.5f,   1.0f, 0.5f, 0.0f,   1.0f, 1.0f, // Front-top-right
-        -0.5f,  0.5f, -0.5f,   1.0f, 0.5f, 0.0f,   0.0f, 1.0f, // Front-top-left
+    // Top Face            // orange (opposite of red)
+    -0.5f,  0.5f,  0.5f,   1.0f, 0.5f, 0.0f,   0.0f, 0.0f, // Back-top-left
+     0.5f,  0.5f,  0.5f,   1.0f, 0.5f, 0.0f,   1.0f, 0.0f, // Back-top-right
+     0.5f,  0.5f, -0.5f,   1.0f, 0.5f, 0.0f,   1.0f, 1.0f, // Front-top-right
+    -0.5f,  0.5f, -0.5f,   1.0f, 0.5f, 0.0f,   0.0f, 1.0f, // Front-top-left
 
-        // Bottom Face         // red (opposite of orange)
-        -0.5f, -0.5f, -0.5f,   1.0f, 0.0f, 0.0f,   0.0f, 0.0f, // Back-bottom-left
-         0.5f, -0.5f, -0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 0.0f, // Back-bottom-right
-         0.5f, -0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // Front-bottom-right
-        -0.5f, -0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   0.0f, 1.0f, // Front-bottom-left
-    };
+    // Bottom Face         // red (opposite of orange)
+    -0.5f, -0.5f, -0.5f,   1.0f, 0.0f, 0.0f,   0.0f, 0.0f, // Back-bottom-left
+     0.5f, -0.5f, -0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 0.0f, // Back-bottom-right
+     0.5f, -0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // Front-bottom-right
+    -0.5f, -0.5f,  0.5f,   1.0f, 0.0f, 0.0f,   0.0f, 1.0f, // Front-bottom-left
+};
 
 unsigned int indices[] = {
     // Front face
@@ -163,6 +163,7 @@ int main(int argc, char* argv[])
         Camera camera(width, height);
         camera.setPerspective(FOVdegree, near, far);
         camera.EnableInputs(window);
+        camera.setBuffers(&va, &ib, &shader);
 
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
@@ -183,31 +184,27 @@ int main(int argc, char* argv[])
             RubiksCube& rubiksCube = RubiksCube::getInstance();
             Cubie *cubes = rubiksCube.getCubes();
 
-            for(int x = -1; x <= 1; x++) {
-                for(int y = -1; y <= 1; y++) {
-                    for(int z = -1; z <= 1; z++) {
-                        int index = (x + 1) * 9 + (y + 1) * 3 + (z + 1);
-                        /* Initialize the model Translate, Rotate and Scale matrices */
-                        glm::mat4 trans = glm::translate(glm::mat4(1.0f), cubes[index].position);
-                        glm::mat4 rot = cubes[index].rotationMatrix;
-                        glm::mat4 scl = glm::scale(glm::mat4(1.0f), glm::vec3(globalScale));
+            /* Draw each cubie */
+            for(int i = 0; i < 27; i++) {
+                /* Initialize the model Translate, Rotate and Scale matrices */
+                glm::mat4 trans = glm::translate(glm::mat4(1.0f), cubes[i].position);
+                glm::mat4 rot = cubes[i].rotationMatrix;
+                glm::mat4 scl = glm::scale(glm::mat4(1.0f), glm::vec3(globalScale));
 
-                        /* Calculate Model-View-Projection matrix */
-                        glm::mat4 model = trans * rot * scl;
-                        glm::mat4 view = camera.GetViewMatrix();
-                        glm::mat4 proj = camera.GetProjectionMatrix();
-                        glm::mat4 mvp = proj * view * model;
+                /* Calculate Model-View-Projection matrix */
+                glm::mat4 model = trans * rot * scl;
+                glm::mat4 view = camera.GetViewMatrix();
+                glm::mat4 proj = camera.GetProjectionMatrix();
+                glm::mat4 mvp = proj * view * model;
 
-                        /* Update shaders paramters and draw to the screen */
-                        shader.Bind();
-                        shader.SetUniform4f("u_Color", color);
-                        shader.SetUniformMat4f("u_MVP", mvp);
-                        shader.SetUniform1i("u_Texture", 0);
-                        va.Bind();
-                        ib.Bind();
-                        GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr));   
-                    }
-                }
+                /* Update shaders paramters and draw to the screen */
+                shader.Bind();
+                shader.SetUniform4f("u_Color", color);
+                shader.SetUniformMat4f("u_MVP", mvp);
+                shader.SetUniform1i("u_Texture", 0);
+                va.Bind();
+                ib.Bind();
+                GLCall(glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr));   
             }
             
             /* Swap front and back buffers */
