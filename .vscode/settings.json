@@ -1,0 +1,11 @@
+{
+    "cmake.sourceDirectory": "/mnt/c/Users/oreno/Uni/graphics_assignments/Assignment3/include/glm",
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/mnt/c/Users/oreno/Uni/graphics_assignments/Assignment3/bin",
+            "binaryPath": "/mnt/c/Users/oreno/Uni/graphics_assignments/Assignment3/bin/main",
+            "binaryArgs": []
+        }
+    ],
+    "cmake.ignoreCMakeListsMissing": true
+}
