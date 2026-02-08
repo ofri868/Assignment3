@@ -5,7 +5,6 @@
 
 const float EPS = 0.5f; 
 const float SENSITIVITY = 0.01f;
-const glm::vec3 PICKED_COLOR = glm::vec3(0.678431f, 0.917647f, 0.917647f); // default to a color that doesn't exist on the cube: Cyan
 
 void Camera::SetOrthographic(float near, float far)
 {
@@ -143,7 +142,7 @@ void Camera::pickCubie(double x, double y)
 
         // Generate unique color ID based on cubie's index
         glm::vec4 colorId = encodeColorId(i);
-        // printf("Cubie i: %d, Color ID RGBA: (%.3f, %.3f, %.3f, %.3f)\n", i, colorId.r, colorId.g, colorId.b, colorId.a);
+
         // Draw the cubie
         m_Shader->SetUniform4f("u_Color", colorId);
         m_Shader->SetUniformMat4f("u_MVP", mvp);
@@ -153,27 +152,18 @@ void Camera::pickCubie(double x, double y)
     // Read pixel color under mouse cursor
     unsigned char color[4] = {0};
     glReadPixels((int)x, m_Height - (int)y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color);
-    // glReadPixels(centerX, centerY, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, color);
-    printf("Picked Color RGBA: (%x, %x, %x, %x)\n", color[0], color[1], color[2], color[3]);
 
     // Disable color picking mode in the shader
     m_Shader->SetUniform1i("u_picking", 0);
 
-    // set the picked cubie based on the color ID
     int pickedIndex = decodeColor(color);
-    printf("Picked Cubie Index: %d\n", pickedIndex);
-    if(pickedIndex < 0 || pickedIndex >= 27) {
-        m_PickedCubie = nullptr;
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        return;
+
+    // If a valid cubie was picked, store its pointer and depth
+    if(pickedIndex >= 0 && pickedIndex < 27) {
+        m_PickedCubie = &cubes[pickedIndex];
+        glReadPixels((int)x, m_Height - (int)y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &m_PickedDepth);
     }
-    m_PickedCubie = &cubes[pickedIndex];
-
-    // Read depth value under mouse cursor
-    m_PickedDepth = 0.0f;
-    glReadPixels((int)x, m_Height - (int)y, 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &m_PickedDepth);
-
+    
     // Reset the buffers
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
